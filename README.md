@@ -17,13 +17,13 @@ one of them lives here today.
 ## Consuming the SDK
 
 Each example's `gleam.toml` lists exactly the per-service hex
-packages it imports, on top of the shared `gleam_aws_runtime`:
+packages it imports, on top of the shared `aws_gleam_runtime`:
 
 ```toml
 [dependencies]
-gleam_aws_runtime = ">= 0.1.0"
-gleam_aws_s3      = ">= 0.1.0"
-gleam_aws_sqs     = ">= 0.1.0"
+aws_gleam_runtime = ">= 0.1.0"
+aws_gleam_s3      = ">= 0.1.0"
+aws_gleam_sqs     = ">= 0.1.0"
 ```
 
 That way, your compile only touches the AWS services you use —
@@ -58,9 +58,9 @@ Once the SDK's first version is on hex, the example's
 `gleam.toml` becomes:
 
 ```toml
-gleam_aws_runtime = ">= 0.1.0"
-gleam_aws_s3      = ">= 0.1.0"
-gleam_aws_sqs     = ">= 0.1.0"
+aws_gleam_runtime = ">= 0.1.0"
+aws_gleam_s3      = ">= 0.1.0"
+aws_gleam_sqs     = ">= 0.1.0"
 ```
 
 and the deploy collapses to:

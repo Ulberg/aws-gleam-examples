@@ -21,9 +21,9 @@ gleam_otp = ">= 1.0.0 and < 2.0.0"
 gleam_http = ">= 4.0.0 and < 5.0.0"
 gleam_httpc = ">= 5.0.0 and < 6.0.0"
 gleam_json = ">= 2.0.0 and < 4.0.0"
-gleam_aws_runtime = { path = "../../aws-gleam/runtime" }
-gleam_aws_s3 = { path = "../../aws-gleam/services/s3" }
-gleam_aws_sqs = { path = "../../aws-gleam/services/sqs" }
+aws_gleam_runtime = { path = "../../aws-gleam/runtime" }
+aws_gleam_s3 = { path = "../../aws-gleam/services/s3" }
+aws_gleam_sqs = { path = "../../aws-gleam/services/sqs" }
 
 [dev-dependencies]
 gleeunit = ">= 1.0.0 and < 2.0.0"
