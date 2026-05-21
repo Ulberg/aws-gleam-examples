@@ -63,15 +63,18 @@ fn handle(
 
   // Process every record. Each failure goes into batch_item_failures
   // by message_id; the rest are silently considered successful.
+  // `message.message_id` is `Option(String)` (SDK-faithful — SQS
+  // technically allows servers to omit it). Lambda always
+  // populates it, so unwrap with an "unknown" sentinel rather
+  // than failing the whole batch on a missing one.
   let failures =
     list.filter_map(event.records, fn(r) {
+      let mid = option.unwrap(r.message.message_id, "unknown")
       case process_record(client, table_name, r) {
         Ok(_) -> Error(Nil)
         Error(reason) -> {
-          io.println_error(
-            "msg=" <> r.message_id <> " failed: " <> reason,
-          )
-          Ok(r.message_id)
+          io.println_error("msg=" <> mid <> " failed: " <> reason)
+          Ok(mid)
         }
       }
     })
@@ -95,8 +98,16 @@ fn process_record(
   table_name: String,
   record: SqsRecord,
 ) -> Result(Nil, String) {
-  use msg <- result.try(decode_message(record.body))
-  put_item(client, table_name, msg, record.message_id)
+  // Body / message_id arrive as Option(_) because the SDK's
+  // `sqs.Message` type is Smithy-faithful (the SQS API allows
+  // either to be missing). Lambda always populates them — surface
+  // an explicit error if a record somehow lacks a body.
+  use body <- result.try(
+    option.to_result(record.message.body, "SQS record missing body"),
+  )
+  use msg <- result.try(decode_message(body))
+  let mid = option.unwrap(record.message.message_id, "unknown")
+  put_item(client, table_name, msg, mid)
 }
 
 fn decode_message(body: String) -> Result(Message, String) {

@@ -18,6 +18,7 @@
 //// strongly-typed events (`SqsEvent`, `Context`) instead of raw
 //// `BitArray`.
 
+import aws/services/sqs
 import gleam/bit_array
 import gleam/dynamic/decode
 import gleam/http
@@ -56,12 +57,21 @@ pub type SqsEvent {
   SqsEvent(records: List(SqsRecord))
 }
 
+/// One SQS message delivered by the Lambda event source mapping.
+/// `message` is the SDK's own `sqs.Message` type — same shape the
+/// `sqs.receive_message` op returns when polling SQS directly — so
+/// handlers can pass `record.message` straight to any helper that
+/// accepts a `sqs.Message`. The three Lambda-specific fields
+/// (event_source / event_source_arn / aws_region) live alongside.
+///
+/// `sqs.Message` fields are all `Option(_)` (Smithy faithfulness —
+/// the SQS API technically allows servers to omit any of them). On
+/// the Lambda event side `message_id` / `receipt_handle` / `body` /
+/// `md5_of_body` are always populated, so the decoder below wraps
+/// them in `Some(_)`; the rest stay `None`.
 pub type SqsRecord {
   SqsRecord(
-    message_id: String,
-    receipt_handle: String,
-    body: String,
-    md5_of_body: String,
+    message: sqs.Message,
     event_source: String,
     event_source_arn: String,
     aws_region: String,
@@ -122,11 +132,22 @@ fn decode_sqs_event(payload: String) -> Result(SqsEvent, String) {
     use event_source <- decode.field("eventSource", decode.string)
     use event_source_arn <- decode.field("eventSourceARN", decode.string)
     use aws_region <- decode.field("awsRegion", decode.string)
+    // Build the SDK's `sqs.Message` from the JSON envelope. The
+    // Lambda event always carries message_id / receipt_handle /
+    // body / md5_of_body so they're wrapped in Some; attributes
+    // and message_attributes aren't decoded here (we don't need
+    // them for the smoke-test; add to the decoder above if you
+    // do).
+    let message =
+      sqs.Message(
+        ..sqs.message_default(),
+        body: Some(body),
+        md5_of_body: Some(md5_of_body),
+        message_id: Some(message_id),
+        receipt_handle: Some(receipt_handle),
+      )
     decode.success(SqsRecord(
-      message_id: message_id,
-      receipt_handle: receipt_handle,
-      body: body,
-      md5_of_body: md5_of_body,
+      message: message,
       event_source: event_source,
       event_source_arn: event_source_arn,
       aws_region: aws_region,
