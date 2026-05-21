@@ -7,12 +7,13 @@ infra; they share no code.
 | Example | What it shows |
 |---|---|
 | [`fargate-smoke-test/`](./fargate-smoke-test/) | End-to-end smoke test of S3 + SQS from inside two ECS Fargate roles (writer + reader). Validates the credentials chain, SigV4 signing, endpoint resolution, and HTTP transport against live AWS. |
+| [`lambda-dynamodb-sqs/`](./lambda-dynamodb-sqs/) | SQS-triggered Lambda that lands each message into a DynamoDB table. Demonstrates the SDK on Lambda via container image deploy. Typed event + Handler API informed by [glambda](https://github.com/ryanmiville/glambda); partial-batch failure semantics. |
 
-More examples (Lambda via container image, EC2, EKS, etc.) will
-land here when there's a working pattern for each. See
-[`aws-gleam/docs/lambda-gleam.md`](https://github.com/Ulberg/aws-gleam/blob/main/docs/lambda-gleam.md)
-for the three known approaches to deploying Gleam to Lambda; only
-one of them lives here today.
+More examples (EC2, EKS, etc.) will land here when there's a
+working pattern for each. See [`aws-gleam/docs/lambda-gleam.md`](https://github.com/Ulberg/aws-gleam/blob/main/docs/lambda-gleam.md)
+for the three known approaches to deploying Gleam to Lambda; one
+of them (container image + Erlang target) is what
+`lambda-dynamodb-sqs` uses.
 
 ## Consuming the SDK
 
