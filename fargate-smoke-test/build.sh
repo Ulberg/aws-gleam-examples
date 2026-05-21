@@ -16,7 +16,23 @@
 
 set -eu
 HERE="$(cd "$(dirname "$0")" && pwd)"
-REPO_ROOT="$(cd "$HERE/.." && pwd)"
+# Docker build context = the directory ABOVE this repo, so it
+# contains both aws-gleam-examples/ and aws-gleam/ as sibling
+# subdirectories. The Dockerfile COPYs both in.
+CONTEXT_ROOT="$(cd "$HERE/../.." && pwd)"
+
+# Sanity-check the sibling SDK checkout exists. If it doesn't,
+# fail early with a clear message rather than letting docker
+# fail with a less-obvious "No such file or directory" on
+# `COPY aws-gleam/`.
+if [ ! -d "$CONTEXT_ROOT/aws-gleam" ]; then
+  echo "missing sibling checkout: $CONTEXT_ROOT/aws-gleam" >&2
+  echo "clone https://github.com/Ulberg/aws-gleam alongside this repo," >&2
+  echo "or wait until aws_runtime / aws_s3 / aws_sqs land on hex.pm" >&2
+  echo "and switch fargate-smoke-test/gleam.toml from path deps to" >&2
+  echo "version constraints (see comments in that file)." >&2
+  exit 1
+fi
 
 IMAGE_TAG="${IMAGE_TAG:-latest}"
 
@@ -43,7 +59,7 @@ docker buildx build \
   --load \
   -t "${REPO_URL}:${IMAGE_TAG}" \
   -f "$HERE/Dockerfile" \
-  "$REPO_ROOT"
+  "$CONTEXT_ROOT"
 
 echo "→ docker login to ECR ($REGION)"
 aws ecr get-login-password --region "$REGION" | \
