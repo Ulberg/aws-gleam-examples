@@ -1,9 +1,10 @@
-# aws-gleam-smoke
+# fargate-smoke-test
 
-Real-world end-to-end test for the [aws-gleam](../) SDK. Deploys two
-ECS Fargate workloads that exercise S3 + SQS from inside the container,
-with credentials coming from the task role via the standard ECS
-metadata endpoint — same path real production workloads use.
+Real-world end-to-end test for the [aws-gleam](https://github.com/Ulberg/aws-gleam)
+SDK. Deploys two ECS Fargate workloads that exercise S3 + SQS from
+inside the container, with credentials coming from the task role via
+the standard ECS metadata endpoint — same path real production
+workloads use.
 
 * **`writer`** — one-shot Fargate task. Reads a payload from
   `SMOKE_PAYLOAD`, writes it to S3 under `events/<unique>.bin`, then
@@ -37,15 +38,15 @@ to Fargate:
    LOC) only exists to satisfy Lambda's invoke contract. On Fargate
    the BEAM just runs — the file goes away.
 
-For callers who **do** want Gleam-on-Lambda, see
-[`../docs/lambda-gleam.md`](../docs/lambda-gleam.md) — it documents
-three working approaches with pros/cons.
+For callers who **do** want Gleam-on-Lambda, see the sibling
+[`lambda-dynamodb-sqs/`](../lambda-dynamodb-sqs/) example — it
+demonstrates the container-image + Erlang-target approach.
 
 ## Layout
 
 ```
-smoke-test/
-├── gleam.toml                       path dep: aws = { path = "../" }
+fargate-smoke-test/
+├── gleam.toml                       hex deps: aws_gleam_runtime + _s3 + _sqs
 ├── src/
 │   ├── aws_gleam_smoke.gleam        Entry: SMOKE_ROLE dispatch
 │   ├── writer_handler.gleam         PutObject + SendMessage, exit(0)
@@ -65,7 +66,7 @@ eval "$(aws configure export-credentials --format env)"
 export AWS_REGION=us-east-1
 
 # Pin a globally-unique bucket name based on your account
-cd smoke-test/infra
+cd fargate-smoke-test/infra
 cat > terraform.tfvars <<EOF
 bucket_name = "$(aws sts get-caller-identity --query Account --output text)-aws-gleam-smoke"
 EOF
@@ -76,14 +77,14 @@ EOF
 `build.sh` does everything: ECR repo, docker build, push, apply.
 
 ```sh
-cd smoke-test
+cd fargate-smoke-test
 ./build.sh
 ```
 
-First run takes ~5-10 min (pulls the gleam-lang base image, runs
-the SDK's 409-service codegen inside the container, builds the
-OTP shipment). Subsequent runs hit Docker's layer cache and are
-near-instant unless the SDK source changed.
+First run takes ~3-5 min (pulls the gleam-lang base image,
+`gleam deps download` from hex.pm, builds the OTP shipment).
+Subsequent runs hit Docker's layer cache and are near-instant
+unless `gleam.toml` or `src/` changed.
 
 ## Run a smoke iteration
 
@@ -120,7 +121,7 @@ an SQS round-trip — no cold start on the read side.
 ## Tear down
 
 ```sh
-cd smoke-test/infra
+cd fargate-smoke-test/infra
 tofu destroy -auto-approve
 ```
 

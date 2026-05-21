@@ -10,10 +10,10 @@ infra; they share no code.
 | [`lambda-dynamodb-sqs/`](./lambda-dynamodb-sqs/) | SQS-triggered Lambda that lands each message into a DynamoDB table. Demonstrates the SDK on Lambda via container image deploy. Typed event + Handler API informed by [glambda](https://github.com/ryanmiville/glambda); partial-batch failure semantics. |
 
 More examples (EC2, EKS, etc.) will land here when there's a
-working pattern for each. See [`aws-gleam/docs/lambda-gleam.md`](https://github.com/Ulberg/aws-gleam/blob/main/docs/lambda-gleam.md)
-for the three known approaches to deploying Gleam to Lambda; one
-of them (container image + Erlang target) is what
-`lambda-dynamodb-sqs` uses.
+working pattern for each. `lambda-dynamodb-sqs` shows the
+container-image + Erlang-target approach to running Gleam on
+Lambda (the first-party Lambda runtimes ship no BEAM, so a
+container image is the way in).
 
 ## Consuming the SDK
 

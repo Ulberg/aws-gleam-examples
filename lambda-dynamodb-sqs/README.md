@@ -40,14 +40,14 @@ client → aws sqs send-message → SQS queue ─── trigger ─── Lambda
 
 ```
 lambda-dynamodb-sqs/
-├── gleam.toml              path deps to aws-gleam SDK packages
+├── gleam.toml              hex deps: aws_gleam_runtime + _dynamodb + _sqs
 ├── src/
 │   ├── lambda.gleam        typed event records + handler
 │   │                       dispatcher + Runtime API polling loop
 │   │                       (glambda-inspired, Erlang-target)
 │   └── lambda_dynamodb_sqs.gleam   handler: parse, PutItem
 ├── Dockerfile              container image (single stage,
-│                           gleam-lang base, regen+export inside)
+│                           gleam-lang base, deps download + export inside)
 ├── build.sh                docker build + ECR push + tofu apply
 └── infra/                  OpenTofu: DynamoDB + SQS + Lambda + IAM
 ```
@@ -58,10 +58,6 @@ lambda-dynamodb-sqs/
 - OpenTofu (or Terraform — module is plain HCL)
 - AWS CLI v2 + credentials in env (`eval "$(aws configure
   export-credentials --format env)"`)
-- The aws-gleam SDK as a sibling checkout at `../../aws-gleam/`
-  (until the SDK is on hex; then flip `gleam.toml`'s path deps
-  to version constraints — `aws_gleam_runtime = ">= 0.1.0"`, etc.
-  — and drop the sibling-checkout requirement)
 
 ## Deploy + invoke
 
