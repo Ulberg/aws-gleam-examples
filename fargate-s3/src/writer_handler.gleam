@@ -15,7 +15,7 @@ import gleam/option.{Some}
 import gleam/result
 import gleam/string
 
-const default_payload: String = "hello from aws-gleam fargate smoke test"
+const default_payload: String = "hello from aws-gleam fargate-s3"
 
 pub fn run() -> Result(String, String) {
   use bucket <- env_required("SMOKE_BUCKET")
@@ -124,7 +124,7 @@ fn try_step(
   }
 }
 
-@external(erlang, "smoke_ffi", "get_env")
+@external(erlang, "fargate_s3_ffi", "get_env")
 fn os_getenv(name: String) -> Result(String, Nil)
 
 @external(erlang, "erlang", "unique_integer")

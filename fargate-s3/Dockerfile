@@ -1,5 +1,4 @@
-# Fargate container image for the aws-gleam Fargate smoke-test
-# example.
+# Fargate container image for the aws-gleam fargate-s3 example.
 #
 # Consumes aws_gleam_runtime + aws_gleam_s3 + aws_gleam_sqs from
 # hex.pm — no sibling SDK checkout needed, no in-image regen.

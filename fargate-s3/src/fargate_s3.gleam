@@ -1,4 +1,4 @@
-//// Smoke-test entry. Same OTP release services both Fargate task
+//// fargate-s3 entry. Same OTP release services both Fargate task
 //// shapes; `SMOKE_ROLE` env var picks which:
 ////
 ////   * `writer`  — one-shot task. Reads the payload from
@@ -45,13 +45,13 @@ fn exit_on_error(res: Result(String, String)) -> Nil {
       halt(0)
     }
     Error(msg) -> {
-      io.println_error("smoke-test failed: " <> msg)
+      io.println_error("fargate-s3 failed: " <> msg)
       halt(1)
     }
   }
 }
 
-@external(erlang, "smoke_ffi", "get_env")
+@external(erlang, "fargate_s3_ffi", "get_env")
 fn os_getenv(name: String) -> Result(String, Nil)
 
 @external(erlang, "erlang", "halt")

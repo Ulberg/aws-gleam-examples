@@ -2,7 +2,9 @@
 # You typically do not need to edit this file
 
 packages = [
-  { name = "aws", version = "0.1.0", build_tools = ["gleam"], requirements = ["gleam_erlang", "gleam_http", "gleam_httpc", "gleam_json", "gleam_otp", "gleam_stdlib"], source = "local", path = ".." },
+  { name = "aws_gleam_runtime", version = "1.1.0", build_tools = ["gleam"], requirements = ["gleam_erlang", "gleam_http", "gleam_httpc", "gleam_json", "gleam_otp", "gleam_stdlib"], otp_app = "aws_gleam_runtime", source = "hex", outer_checksum = "AF294B91CBBD6F64FCBE42170963605DD22165313ADAB7CA631AEA0E3E14CC7C" },
+  { name = "aws_gleam_s3", version = "1.1.0", build_tools = ["gleam"], requirements = ["aws_gleam_runtime", "gleam_erlang", "gleam_http", "gleam_httpc", "gleam_json", "gleam_otp", "gleam_stdlib"], otp_app = "aws_gleam_s3", source = "hex", outer_checksum = "3DB9178CCEDA63F8EF2CC738F8E70793325ACA0D035FFBB8814F83C97E987CE7" },
+  { name = "aws_gleam_sqs", version = "1.1.0", build_tools = ["gleam"], requirements = ["aws_gleam_runtime", "gleam_erlang", "gleam_http", "gleam_httpc", "gleam_json", "gleam_otp", "gleam_stdlib"], otp_app = "aws_gleam_sqs", source = "hex", outer_checksum = "9056A532E15CFCCA2CAE45A4DC6BEFBAAB58A1EA6F1DA2AF5B5DB84567D82717" },
   { name = "gleam_erlang", version = "1.3.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "gleam_erlang", source = "hex", outer_checksum = "1124AD3AA21143E5AF0FC5CF3D9529F6DB8CA03E43A55711B60B6B7B3874375C" },
   { name = "gleam_http", version = "4.3.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "gleam_http", source = "hex", outer_checksum = "82EA6A717C842456188C190AFB372665EA56CE13D8559BF3B1DD9E40F619EE0C" },
   { name = "gleam_httpc", version = "5.0.0", build_tools = ["gleam"], requirements = ["gleam_erlang", "gleam_http", "gleam_stdlib"], otp_app = "gleam_httpc", source = "hex", outer_checksum = "C545172618D07811494E97AAA4A0FB34DA6F6D0061FDC8041C2F8E3BE2B2E48F" },
@@ -13,7 +15,9 @@ packages = [
 ]
 
 [requirements]
-aws = { path = "../" }
+aws_gleam_runtime = { version = ">= 1.1.0 and < 2.0.0" }
+aws_gleam_s3 = { version = ">= 1.1.0 and < 2.0.0" }
+aws_gleam_sqs = { version = ">= 1.1.0 and < 2.0.0" }
 gleam_erlang = { version = ">= 1.0.0 and < 2.0.0" }
 gleam_http = { version = ">= 4.0.0 and < 5.0.0" }
 gleam_httpc = { version = ">= 5.0.0 and < 6.0.0" }

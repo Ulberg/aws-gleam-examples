@@ -1,8 +1,8 @@
-name = "fargate_smoke_test"
+name = "fargate_s3"
 version = "0.1.0"
 target = "erlang"
 
-description = "End-to-end Fargate smoke test for the aws-gleam SDK. Two roles in one OTP release (writer + reader) exercise S3 PutObject / GetObject, SQS SendMessage / ReceiveMessage, and the credentials chain against a real AWS account. Deployed via OpenTofu in ./infra/."
+description = "End-to-end S3 + SQS round-trip on Fargate for the aws-gleam SDK. Two roles in one OTP release (writer + reader) exercise S3 PutObject / GetObject, SQS SendMessage / ReceiveMessage, and the credentials chain against a real AWS account. Deployed via OpenTofu in ./infra/."
 
 # Pinned to the SDK's 1.x line. Patch + minor releases (1.0.1,
 # 1.1.0, ...) auto-resolve; 2.0.0 is treated as breaking and won't

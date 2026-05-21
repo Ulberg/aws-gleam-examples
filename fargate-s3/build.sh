@@ -1,11 +1,11 @@
 #!/bin/sh
-# Build + push the Fargate container image for the smoke test.
+# Build + push the Fargate container image for the fargate-s3 example.
 #
 # The Dockerfile does the heavy lifting (gleam + erlang from
-# `ghcr.io/gleam-lang/gleam:VERSION-erlang-alpine`, runs
-# `scripts/regen.sh`, `gleam export erlang-shipment`). This script
-# orchestrates: ensure ECR repo → docker buildx → docker push →
-# tofu apply.
+# `ghcr.io/gleam-lang/gleam:VERSION-erlang-alpine`,
+# `gleam deps download`, `gleam export erlang-shipment`). This
+# script orchestrates: ensure ECR repo → docker buildx →
+# docker push → tofu apply.
 #
 # Set `SKIP_INFRA=1` to stop after the push (e.g. for `docker run`
 # locally to debug the image).
@@ -61,4 +61,4 @@ echo "→ tofu apply (reader service rolls forward to the new image digest)"
 
 echo
 echo "done. Try:"
-echo "  ./run-smoke.sh \"hello from fargate\""
+echo "  ./run.sh \"hello from fargate\""

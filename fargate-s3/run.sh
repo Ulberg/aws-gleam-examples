@@ -5,12 +5,12 @@
 #   * AWS creds are in the current shell
 #
 # Usage:
-#   ./run-smoke.sh               # default payload
-#   ./run-smoke.sh "my payload"  # custom payload
+#   ./run.sh               # default payload
+#   ./run.sh "my payload"  # custom payload
 
 set -eu
 HERE="$(cd "$(dirname "$0")" && pwd)"
-PAYLOAD="${1:-hello from aws-gleam fargate smoke test}"
+PAYLOAD="${1:-hello from aws-gleam fargate-s3}"
 
 cd "$HERE/infra"
 CLUSTER=$(tofu output -raw cluster_arn)

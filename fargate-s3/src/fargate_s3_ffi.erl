@@ -1,4 +1,4 @@
-%% Tiny Erlang FFI for the Gleam smoke test.
+%% Tiny Erlang FFI for the Gleam fargate-s3 example.
 %%
 %% `os:getenv/1` returns `string() | false`, but Gleam's
 %% `@external(erlang, "os", "getenv")` with a `Result(String, Nil)`
@@ -8,7 +8,7 @@
 %%
 %% Wrap once here so the Gleam side stays clean.
 
--module(smoke_ffi).
+-module(fargate_s3_ffi).
 -export([get_env/1]).
 
 get_env(Name) when is_binary(Name) ->
