@@ -55,13 +55,9 @@ fn loop(
 fn receive_batch(client: sqs.Client, queue_url: String) -> List(sqs.Message) {
   let req =
     sqs.ReceiveMessageRequest(
-      attribute_names: None,
+      ..sqs.receive_message_request_default(),
       max_number_of_messages: Some(10),
-      message_attribute_names: None,
-      message_system_attribute_names: None,
       queue_url: Some(queue_url),
-      receive_request_attempt_id: None,
-      visibility_timeout: None,
       // Long-poll: cuts empty-queue API spend by ~25x at idle, also
       // lower latency than a sleep-poll loop.
       wait_time_seconds: Some(20),
@@ -119,27 +115,9 @@ fn fetch(
 ) -> Result(Int, String) {
   let input =
     s3.GetObjectRequest(
+      ..s3.get_object_request_default(),
       bucket: Some(bucket),
-      checksum_mode: None,
-      expected_bucket_owner: None,
-      if_match: None,
-      if_modified_since: None,
-      if_none_match: None,
-      if_unmodified_since: None,
       key: Some(key),
-      part_number: None,
-      range: None,
-      request_payer: None,
-      response_cache_control: None,
-      response_content_disposition: None,
-      response_content_encoding: None,
-      response_content_language: None,
-      response_content_type: None,
-      response_expires: None,
-      sse_customer_algorithm: None,
-      sse_customer_key: None,
-      sse_customer_key_md5: None,
-      version_id: None,
     )
   case s3.get_object(client, input) {
     Ok(out) ->

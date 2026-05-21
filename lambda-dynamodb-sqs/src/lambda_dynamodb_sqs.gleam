@@ -125,16 +125,8 @@ fn put_item(
     ])
   let input =
     dynamodb.PutItemInput(
-      condition_expression: None,
-      conditional_operator: None,
-      expected: None,
-      expression_attribute_names: None,
-      expression_attribute_values: None,
+      ..dynamodb.put_item_input_default(),
       item: Some(item),
-      return_consumed_capacity: None,
-      return_item_collection_metrics: None,
-      return_values: None,
-      return_values_on_condition_check_failure: None,
       table_name: Some(table_name),
     )
   case dynamodb.put_item(client, input) {

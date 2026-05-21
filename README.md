@@ -22,16 +22,16 @@ packages it imports, on top of the shared `aws_gleam_runtime`:
 
 ```toml
 [dependencies]
-aws_gleam_runtime = ">= 0.1.2 and < 0.2.0"
-aws_gleam_s3      = ">= 0.1.2 and < 0.2.0"
-aws_gleam_sqs     = ">= 0.1.2 and < 0.2.0"
+aws_gleam_runtime = ">= 1.1.0 and < 2.0.0"
+aws_gleam_s3      = ">= 1.1.0 and < 2.0.0"
+aws_gleam_sqs     = ">= 1.1.0 and < 2.0.0"
 ```
 
-Pinned to one minor band. Patch releases pull in automatically
-(`0.1.3`, `0.1.4`, …); a `0.2.0` is treated as breaking and
-requires an explicit bump per example. The SDK releases under one
-tag so every `aws_gleam_*` moves in lock-step — the same
-constraint works for every dep.
+Pinned to the current major. Patch + minor releases (`1.0.1`,
+`1.1.0`, …) pull in automatically; a `2.0.0` is treated as
+breaking and requires an explicit bump per example. The SDK
+releases under one tag so every `aws_gleam_*` moves in lock-step
+— the same constraint works for every dep.
 
 That way, your compile only touches the AWS services you use —
 not all 409 the SDK supports. The tree-shaking trick: the SDK
@@ -63,12 +63,13 @@ pinned in `gleam.toml`. The Dockerfile is just `gleam:erlang-alpine`
 
 ## Bumping SDK versions
 
-When a new SDK release lands (`0.1.3`, `0.2.0`, …):
+When a new SDK release lands (`1.0.1`, `1.1.0`, `2.0.0`, …):
 
 ```sh
-# 1. Update each example's gleam.toml dep lines manually OR via sed:
-sed -i 's/0.1.2/0.1.3/g' */gleam.toml
+# Patch / minor — picked up automatically on next deps download.
+gleam deps update
 
-# 2. Rebuild + redeploy. Path-dep iteration first if a breaking
-#    change in 0.2.0 needs the handler updated.
+# Major (2.0+) — bump the upper bound:
+sed -i 's/and < 2.0.0/and < 3.0.0/' */gleam.toml
+gleam deps update
 ```

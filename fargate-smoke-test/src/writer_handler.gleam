@@ -11,7 +11,7 @@ import aws/services/sqs
 import aws/streaming
 import gleam/bit_array
 import gleam/int
-import gleam/option.{None, Some}
+import gleam/option.{Some}
 import gleam/result
 import gleam/string
 
@@ -73,52 +73,12 @@ fn put_payload(
 ) -> Result(Nil, String) {
   let input =
     s3.PutObjectRequest(
-      acl: None,
+      ..s3.put_object_request_default(),
       body: Some(streaming.from_bit_array(body)),
       bucket: Some(bucket),
-      bucket_key_enabled: None,
-      cache_control: None,
-      checksum_algorithm: None,
-      checksum_crc32: None,
-      checksum_crc32_c: None,
-      checksum_crc64_nvme: None,
-      checksum_md5: None,
-      checksum_sha1: None,
-      checksum_sha256: None,
-      checksum_sha512: None,
-      checksum_xxhash128: None,
-      checksum_xxhash3: None,
-      checksum_xxhash64: None,
-      content_disposition: None,
-      content_encoding: None,
-      content_language: None,
       content_length: Some(bit_array.byte_size(body)),
-      content_md5: None,
       content_type: Some("application/octet-stream"),
-      expected_bucket_owner: None,
-      expires: None,
-      grant_full_control: None,
-      grant_read: None,
-      grant_read_acp: None,
-      grant_write_acp: None,
-      if_match: None,
-      if_none_match: None,
       key: Some(key),
-      metadata: None,
-      object_lock_legal_hold_status: None,
-      object_lock_mode: None,
-      object_lock_retain_until_date: None,
-      request_payer: None,
-      sse_customer_algorithm: None,
-      sse_customer_key: None,
-      sse_customer_key_md5: None,
-      ssekms_encryption_context: None,
-      ssekms_key_id: None,
-      server_side_encryption: None,
-      storage_class: None,
-      tagging: None,
-      website_redirect_location: None,
-      write_offset_bytes: None,
     )
   case s3.put_object(client, input) {
     Ok(_) -> Ok(Nil)
@@ -133,12 +93,8 @@ fn send_key(
 ) -> Result(Nil, String) {
   let input =
     sqs.SendMessageRequest(
-      delay_seconds: None,
-      message_attributes: None,
+      ..sqs.send_message_request_default(),
       message_body: Some(key),
-      message_deduplication_id: None,
-      message_group_id: None,
-      message_system_attributes: None,
       queue_url: Some(queue_url),
     )
   case sqs.send_message(client, input) {
