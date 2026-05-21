@@ -4,15 +4,6 @@
 
 set -eu
 HERE="$(cd "$(dirname "$0")" && pwd)"
-CONTEXT_ROOT="$(cd "$HERE/../.." && pwd)"
-
-if [ ! -d "$CONTEXT_ROOT/aws-gleam" ]; then
-  echo "missing sibling checkout: $CONTEXT_ROOT/aws-gleam" >&2
-  echo "clone https://github.com/Ulberg/aws-gleam alongside this repo" >&2
-  echo "(or after hex publish, switch path deps to version constraints" >&2
-  echo " in gleam.toml — the sibling won't be needed any more)." >&2
-  exit 1
-fi
 
 IMAGE_TAG="${IMAGE_TAG:-latest}"
 
@@ -30,7 +21,7 @@ docker buildx build \
   --load \
   -t "${REPO_URL}:${IMAGE_TAG}" \
   -f "$HERE/Dockerfile" \
-  "$CONTEXT_ROOT"
+  "$HERE"
 
 echo "→ docker login to ECR ($REGION)"
 aws ecr get-login-password --region "$REGION" | \

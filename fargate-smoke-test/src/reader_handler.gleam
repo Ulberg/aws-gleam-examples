@@ -112,7 +112,11 @@ fn process(
   }
 }
 
-fn fetch(client: s3.Client, bucket: String, key: String) -> Result(Int, String) {
+fn fetch(
+  client: s3.Client,
+  bucket: String,
+  key: String,
+) -> Result(Int, String) {
   let input =
     s3.GetObjectRequest(
       bucket: Some(bucket),

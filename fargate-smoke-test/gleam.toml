@@ -4,16 +4,16 @@ target = "erlang"
 
 description = "End-to-end Fargate smoke test for the aws-gleam SDK. Two roles in one OTP release (writer + reader) exercise S3 PutObject / GetObject, SQS SendMessage / ReceiveMessage, and the credentials chain against a real AWS account. Deployed via OpenTofu in ./infra/."
 
-# Path deps to the sibling aws-gleam checkout while the SDK is
-# pre-publish. Once `aws_runtime` / `aws_s3` / `aws_sqs` are on
-# hex.pm, swap each path dep for a version constraint:
+# Pinned to the SDK package versions on hex. Range is exact-minor
+# (`>= 0.1.2 and < 0.2.0`) so patch releases pull in automatically;
+# any 0.2.0 jump is treated as breaking and won't be picked up
+# without an explicit bump here. SDK packages move in lock-step
+# under one tag, so the same constraint works on every aws_gleam_*
+# dep.
 #
-#   aws_runtime = ">= 0.1.0"
-#   aws_s3      = ">= 0.1.0"
-#   aws_sqs     = ">= 0.1.0"
-#
-# The handler source doesn't change — same `aws/services/s3`
-# and `aws/services/sqs` module imports either way.
+# To rebuild against a sibling aws-gleam checkout instead (during
+# SDK iteration), swap each line to
+#   aws_gleam_<x> = { path = "../../aws-gleam/<x-path>" }
 [dependencies]
 gleam_stdlib = ">= 0.40.0 and < 2.0.0"
 gleam_erlang = ">= 1.0.0 and < 2.0.0"
@@ -21,9 +21,9 @@ gleam_otp = ">= 1.0.0 and < 2.0.0"
 gleam_http = ">= 4.0.0 and < 5.0.0"
 gleam_httpc = ">= 5.0.0 and < 6.0.0"
 gleam_json = ">= 2.0.0 and < 4.0.0"
-aws_gleam_runtime = { path = "../../aws-gleam/runtime" }
-aws_gleam_s3 = { path = "../../aws-gleam/services/s3" }
-aws_gleam_sqs = { path = "../../aws-gleam/services/sqs" }
+aws_gleam_runtime = ">= 0.1.2 and < 0.2.0"
+aws_gleam_s3 = ">= 0.1.2 and < 0.2.0"
+aws_gleam_sqs = ">= 0.1.2 and < 0.2.0"
 
 [dev-dependencies]
 gleeunit = ">= 1.0.0 and < 2.0.0"

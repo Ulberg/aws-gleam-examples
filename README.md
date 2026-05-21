@@ -22,57 +22,53 @@ packages it imports, on top of the shared `aws_gleam_runtime`:
 
 ```toml
 [dependencies]
-aws_gleam_runtime = ">= 0.1.0"
-aws_gleam_s3      = ">= 0.1.0"
-aws_gleam_sqs     = ">= 0.1.0"
+aws_gleam_runtime = ">= 0.1.2 and < 0.2.0"
+aws_gleam_s3      = ">= 0.1.2 and < 0.2.0"
+aws_gleam_sqs     = ">= 0.1.2 and < 0.2.0"
 ```
+
+Pinned to one minor band. Patch releases pull in automatically
+(`0.1.3`, `0.1.4`, …); a `0.2.0` is treated as breaking and
+requires an explicit bump per example. The SDK releases under one
+tag so every `aws_gleam_*` moves in lock-step — the same
+constraint works for every dep.
 
 That way, your compile only touches the AWS services you use —
 not all 409 the SDK supports. The tree-shaking trick: the SDK
 ships one hex package per service, not one mega-package
 containing everything.
 
-During the SDK's pre-publish phase, examples use path deps to a
-sibling `aws-gleam/` checkout instead of hex version constraints.
-Comments in each example's `gleam.toml` explain the flip.
+During SDK iteration (when you need to test unreleased changes),
+swap each example's hex dep for a path dep pointing at a sibling
+`aws-gleam/` checkout — e.g.
+`aws_gleam_runtime = { path = "../../aws-gleam/runtime" }`. The
+example's `gleam.toml` carries a comment explaining the flip.
 
-## Pre-publish quickstart (path deps, sibling checkout)
-
-```sh
-# Both repos as siblings under one parent directory:
-git clone https://github.com/Ulberg/aws-gleam.git
-git clone https://github.com/Ulberg/aws-gleam-examples.git
-ls
-# → aws-gleam/ aws-gleam-examples/
-
-# Deploy the Fargate smoke test:
-cd aws-gleam-examples/fargate-smoke-test
-eval "$(aws configure export-credentials --format env)"
-export AWS_REGION=us-east-1
-./build.sh
-./run-smoke.sh "hello from fargate"
-```
-
-## Post-publish quickstart (hex deps, no sibling needed)
-
-Once the SDK's first version is on hex, the example's
-`gleam.toml` becomes:
-
-```toml
-aws_gleam_runtime = ">= 0.1.0"
-aws_gleam_s3      = ">= 0.1.0"
-aws_gleam_sqs     = ">= 0.1.0"
-```
-
-and the deploy collapses to:
+## Quickstart
 
 ```sh
 git clone https://github.com/Ulberg/aws-gleam-examples.git
-cd aws-gleam-examples/fargate-smoke-test
+cd aws-gleam-examples/lambda-dynamodb-sqs   # or fargate-smoke-test/
+
 eval "$(aws configure export-credentials --format env)"
 export AWS_REGION=us-east-1
+
 ./build.sh
 ```
 
-No sibling checkout, no in-image SDK regen, no atom-table flags.
-The Dockerfile collapses to ~5 lines.
+No sibling checkout, no in-image SDK regen — `gleam deps download`
+pulls every `aws_gleam_*` package from hex.pm at the version
+pinned in `gleam.toml`. The Dockerfile is just `gleam:erlang-alpine`
++ `gleam deps download && gleam export erlang-shipment`.
+
+## Bumping SDK versions
+
+When a new SDK release lands (`0.1.3`, `0.2.0`, …):
+
+```sh
+# 1. Update each example's gleam.toml dep lines manually OR via sed:
+sed -i 's/0.1.2/0.1.3/g' */gleam.toml
+
+# 2. Rebuild + redeploy. Path-dep iteration first if a breaking
+#    change in 0.2.0 needs the handler updated.
+```

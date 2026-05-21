@@ -1,32 +1,20 @@
 # Lambda container image for the lambda-dynamodb-sqs example.
 #
-# Build context = the parent directory of this repo (set by
-# build.sh: `docker buildx ... ../..`), so it contains both this
-# repo (aws-gleam-examples) AND the SDK repo (aws-gleam) as
-# sibling checkouts. The example's path deps to
-# `../../aws-gleam/{runtime,services/dynamodb,services/sqs}`
-# resolve once both are copied in.
-#
-# Post-hex-publish this simplifies dramatically: no more sibling
-# repo copy, no in-image regen — just `gleam deps download` from
-# hex.
+# Consumes aws_gleam_runtime + aws_gleam_dynamodb + aws_gleam_sqs
+# from hex.pm — no sibling SDK checkout needed, no in-image regen.
+# `gleam deps download` pulls everything from hex; `gleam export
+# erlang-shipment` produces the OTP release the entrypoint runs.
 
 FROM ghcr.io/gleam-lang/gleam:v1.16.0-erlang-alpine
 
-COPY aws-gleam/        /build/aws-gleam/
-COPY aws-gleam-examples/ /build/aws-gleam-examples/
-
-WORKDIR /build/aws-gleam-examples/lambda-dynamodb-sqs
-
-# regen.sh is bash; alpine ships ash as /bin/sh.
-RUN apk add --no-cache bash coreutils findutils grep sed
+WORKDIR /build
+COPY . /build/
 
 # `docker buildx` has no TTY; OTP 27+ kernel crashes attaching
-# `user` IO without -noinput. Compile-time only — safe.
+# `user` IO without -noinput. Compile-time only, safe.
 ENV ERL_AFLAGS="-noinput"
 
 RUN gleam deps download \
-    && bash -c '(cd /build/aws-gleam && ./scripts/regen.sh dynamodb sqs)' \
     && gleam export erlang-shipment \
     && mv build/erlang-shipment /app \
     && rm -rf /build

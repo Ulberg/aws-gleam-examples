@@ -12,14 +12,14 @@ gleam_http = ">= 4.0.0 and < 5.0.0"
 gleam_httpc = ">= 5.0.0 and < 6.0.0"
 gleam_json = ">= 2.0.0 and < 4.0.0"
 
-# Path deps to the sibling aws-gleam checkout (pre-publish).
-# Switch each to a hex version constraint once on hex.pm:
-#   aws_gleam_runtime  = ">= 0.1.0"
-#   aws_gleam_dynamodb = ">= 0.1.0"
-#   aws_gleam_sqs      = ">= 0.1.0"
-aws_gleam_runtime = { path = "../../aws-gleam/runtime" }
-aws_gleam_dynamodb = { path = "../../aws-gleam/services/dynamodb" }
-aws_gleam_sqs = { path = "../../aws-gleam/services/sqs" }
+# Pinned to the SDK package versions on hex. Range is exact-minor
+# (`>= 0.1.2 and < 0.2.0`) so patch releases pull in automatically;
+# any 0.2.0 jump is treated as breaking and requires explicit bump.
+# To rebuild against a sibling aws-gleam checkout (SDK iteration),
+# swap each line to `aws_gleam_<x> = { path = "../../aws-gleam/<x-path>" }`.
+aws_gleam_runtime = ">= 0.1.2 and < 0.2.0"
+aws_gleam_dynamodb = ">= 0.1.2 and < 0.2.0"
+aws_gleam_sqs = ">= 0.1.2 and < 0.2.0"
 
 [dev-dependencies]
 gleeunit = ">= 1.0.0 and < 2.0.0"
