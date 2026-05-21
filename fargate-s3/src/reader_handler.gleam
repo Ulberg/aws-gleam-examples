@@ -164,5 +164,5 @@ fn env_or_die(name: String) -> String {
   }
 }
 
-@external(erlang, "smoke_ffi", "get_env")
+@external(erlang, "fargate_s3_ffi", "get_env")
 fn os_getenv(name: String) -> Result(String, Nil)

@@ -1,15 +1,15 @@
-# fargate-smoke-test
+# fargate-s3
 
-Real-world end-to-end test for the [aws-gleam](https://github.com/Ulberg/aws-gleam)
-SDK. Deploys two ECS Fargate workloads that exercise S3 + SQS from
-inside the container, with credentials coming from the task role via
-the standard ECS metadata endpoint — same path real production
-workloads use.
+End-to-end S3 + SQS round-trip on Fargate for the
+[aws-gleam](https://github.com/Ulberg/aws-gleam) SDK. Deploys two ECS
+Fargate workloads that exercise S3 + SQS from inside the container,
+with credentials coming from the task role via the standard ECS
+metadata endpoint — same path real production workloads use.
 
 * **`writer`** — one-shot Fargate task. Reads a payload from
   `SMOKE_PAYLOAD`, writes it to S3 under `events/<unique>.bin`, then
   sends the key as an SQS message body. Triggered on demand via
-  `aws ecs run-task` (see `run-smoke.sh`).
+  `aws ecs run-task` (see `run.sh`).
 * **`reader`** — long-running Fargate service (`desired_count = 1`).
   Long-polls SQS (20 s), fetches each S3 object whose key arrives
   in a message body, logs the byte count, deletes the message.
@@ -21,7 +21,7 @@ erlang-shipment` build.
 
 ## Why Fargate, not Lambda
 
-The smoke test originally targeted Lambda. Five problems pushed us
+This example originally targeted Lambda. Five problems pushed us
 to Fargate:
 
 1. `provided.al2023` ships no Erlang runtime; zip deploys fail at
@@ -45,15 +45,15 @@ demonstrates the container-image + Erlang-target approach.
 ## Layout
 
 ```
-fargate-smoke-test/
+fargate-s3/
 ├── gleam.toml                       hex deps: aws_gleam_runtime + _s3 + _sqs
 ├── src/
-│   ├── aws_gleam_smoke.gleam        Entry: SMOKE_ROLE dispatch
+│   ├── fargate_s3.gleam             Entry: SMOKE_ROLE dispatch
 │   ├── writer_handler.gleam         PutObject + SendMessage, exit(0)
 │   └── reader_handler.gleam         Long-poll SQS → GetObject → log
 ├── Dockerfile                       gleam-lang:erlang-alpine base
 ├── build.sh                         build image → push ECR → tofu apply
-├── run-smoke.sh                     run a writer task + tail logs
+├── run.sh                           run a writer task + tail logs
 └── infra/                           OpenTofu: cluster + task defs +
                                      reader service + bucket + queue
 ```
@@ -66,7 +66,7 @@ eval "$(aws configure export-credentials --format env)"
 export AWS_REGION=us-east-1
 
 # Pin a globally-unique bucket name based on your account
-cd fargate-smoke-test/infra
+cd fargate-s3/infra
 cat > terraform.tfvars <<EOF
 bucket_name = "$(aws sts get-caller-identity --query Account --output text)-aws-gleam-smoke"
 EOF
@@ -77,7 +77,7 @@ EOF
 `build.sh` does everything: ECR repo, docker build, push, apply.
 
 ```sh
-cd fargate-smoke-test
+cd fargate-s3
 ./build.sh
 ```
 
@@ -86,11 +86,11 @@ First run takes ~3-5 min (pulls the gleam-lang base image,
 Subsequent runs hit Docker's layer cache and are near-instant
 unless `gleam.toml` or `src/` changed.
 
-## Run a smoke iteration
+## Run an iteration
 
 ```sh
-./run-smoke.sh                       # default payload
-./run-smoke.sh "custom payload"      # any string
+./run.sh                       # default payload
+./run.sh "custom payload"      # any string
 ```
 
 The script starts a one-shot writer task with `SMOKE_PAYLOAD`
@@ -121,7 +121,7 @@ an SQS round-trip — no cold start on the read side.
 ## Tear down
 
 ```sh
-cd fargate-smoke-test/infra
+cd fargate-s3/infra
 tofu destroy -auto-approve
 ```
 

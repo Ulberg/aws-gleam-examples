@@ -6,7 +6,7 @@ infra; they share no code.
 
 | Example | What it shows |
 |---|---|
-| [`fargate-smoke-test/`](./fargate-smoke-test/) | End-to-end smoke test of S3 + SQS from inside two ECS Fargate roles (writer + reader). Validates the credentials chain, SigV4 signing, endpoint resolution, and HTTP transport against live AWS. |
+| [`fargate-s3/`](./fargate-s3/) | End-to-end S3 + SQS round-trip from inside two ECS Fargate roles (writer + reader). Validates the credentials chain, SigV4 signing, endpoint resolution, and HTTP transport against live AWS. |
 | [`lambda-dynamodb-sqs/`](./lambda-dynamodb-sqs/) | SQS-triggered Lambda that lands each message into a DynamoDB table. Demonstrates the SDK on Lambda via container image deploy. Typed event + Handler API informed by [glambda](https://github.com/ryanmiville/glambda); partial-batch failure semantics. |
 
 More examples (EC2, EKS, etc.) will land here when there's a
@@ -48,7 +48,7 @@ example's `gleam.toml` carries a comment explaining the flip.
 
 ```sh
 git clone https://github.com/Ulberg/aws-gleam-examples.git
-cd aws-gleam-examples/lambda-dynamodb-sqs   # or fargate-smoke-test/
+cd aws-gleam-examples/lambda-dynamodb-sqs   # or fargate-s3/
 
 eval "$(aws configure export-credentials --format env)"
 export AWS_REGION=us-east-1
