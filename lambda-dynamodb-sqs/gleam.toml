@@ -1,0 +1,25 @@
+name = "lambda_dynamodb_sqs"
+version = "0.1.0"
+target = "erlang"
+
+description = "SQS-triggered Lambda that lands each message into a DynamoDB table. End-to-end example of running aws-gleam SDK on Lambda via container image deploy. Glambda-inspired typed event + Handler API, but Erlang-target instead of JavaScript."
+
+[dependencies]
+gleam_stdlib = ">= 0.40.0 and < 2.0.0"
+gleam_erlang = ">= 1.0.0 and < 2.0.0"
+gleam_otp = ">= 1.0.0 and < 2.0.0"
+gleam_http = ">= 4.0.0 and < 5.0.0"
+gleam_httpc = ">= 5.0.0 and < 6.0.0"
+gleam_json = ">= 2.0.0 and < 4.0.0"
+
+# Path deps to the sibling aws-gleam checkout (pre-publish).
+# Switch each to a hex version constraint once on hex.pm:
+#   aws_gleam_runtime  = ">= 0.1.0"
+#   aws_gleam_dynamodb = ">= 0.1.0"
+#   aws_gleam_sqs      = ">= 0.1.0"
+aws_gleam_runtime = { path = "../../aws-gleam/runtime" }
+aws_gleam_dynamodb = { path = "../../aws-gleam/services/dynamodb" }
+aws_gleam_sqs = { path = "../../aws-gleam/services/sqs" }
+
+[dev-dependencies]
+gleeunit = ">= 1.0.0 and < 2.0.0"
