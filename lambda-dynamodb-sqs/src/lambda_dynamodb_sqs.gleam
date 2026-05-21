@@ -152,5 +152,5 @@ fn env_required(name: String) -> Result(String, String) {
   }
 }
 
-@external(erlang, "os", "getenv")
+@external(erlang, "lambda_ffi", "getenv")
 fn os_getenv(name: String) -> Result(String, Nil)

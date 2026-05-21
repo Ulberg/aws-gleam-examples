@@ -307,7 +307,10 @@ fn report_error(
   Ok(Nil)
 }
 
-@external(erlang, "os", "getenv")
+// `os:getenv/1` BIF takes a charlist (Erlang string), but Gleam
+// `String` is a binary. Bypass through `lambda_ffi:getenv/1` which
+// converts both sides.
+@external(erlang, "lambda_ffi", "getenv")
 fn os_getenv(name: String) -> Result(String, Nil)
 
 fn runtime_api_host() -> Result(String, RuntimeError) {
