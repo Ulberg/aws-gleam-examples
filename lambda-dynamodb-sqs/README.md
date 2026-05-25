@@ -1,5 +1,13 @@
 # lambda-dynamodb-sqs
 
+> **Deprecated — superseded by [`lambda-s3/`](../lambda-s3/).** That
+> example runs Gleam on Lambda via the first-party `aws_gleam_lambda`
+> package (`import aws/lambda` + `lambda.start`) instead of the ~250
+> LOC Runtime API loop hand-rolled here in `src/lambda.gleam`. This
+> example is kept for reference — the hand-rolled loop is a useful
+> read if you want to see what the package now does for you — but it's
+> not recommended for new work.
+
 SQS-triggered AWS Lambda function written in Gleam. Each incoming
 SQS message is parsed as JSON and landed as a row in a DynamoDB
 table. Per-message failures surface as partial-batch failures via

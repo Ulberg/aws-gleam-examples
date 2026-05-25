@@ -39,8 +39,9 @@ to Fargate:
    the BEAM just runs — the file goes away.
 
 For callers who **do** want Gleam-on-Lambda, see the sibling
-[`lambda-dynamodb-sqs/`](../lambda-dynamodb-sqs/) example — it
-demonstrates the container-image + Erlang-target approach.
+[`lambda-s3/`](../lambda-s3/) example — it demonstrates the
+container-image + Erlang-target approach via the `aws_gleam_lambda`
+package.
 
 ## Layout
 

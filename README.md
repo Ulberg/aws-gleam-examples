@@ -7,13 +7,14 @@ infra; they share no code.
 | Example | What it shows |
 |---|---|
 | [`fargate-s3/`](./fargate-s3/) | End-to-end S3 + SQS round-trip from inside two ECS Fargate roles (writer + reader). Validates the credentials chain, SigV4 signing, endpoint resolution, and HTTP transport against live AWS. |
-| [`lambda-dynamodb-sqs/`](./lambda-dynamodb-sqs/) | SQS-triggered Lambda that lands each message into a DynamoDB table. Demonstrates the SDK on Lambda via container image deploy. Typed event + Handler API informed by [glambda](https://github.com/ryanmiville/glambda); partial-batch failure semantics. |
+| [`lambda-s3/`](./lambda-s3/) | Directly-invoked Lambda that stores each invocation payload as an S3 object. The canonical Gleam-on-Lambda example: Runtime API loop via the `aws_gleam_lambda` package (`import aws/lambda`) + container-image deploy. |
+| [`lambda-dynamodb-sqs/`](./lambda-dynamodb-sqs/) | **(deprecated — see [`lambda-s3/`](./lambda-s3/))** SQS-triggered Lambda that lands each message into a DynamoDB table. Hand-rolls the Runtime API loop locally; kept for reference now that `aws_gleam_lambda` packages it. |
 
 More examples (EC2, EKS, etc.) will land here when there's a
-working pattern for each. `lambda-dynamodb-sqs` shows the
-container-image + Erlang-target approach to running Gleam on
-Lambda (the first-party Lambda runtimes ship no BEAM, so a
-container image is the way in).
+working pattern for each. `lambda-s3` shows the container-image +
+Erlang-target approach to running Gleam on Lambda (the first-party
+Lambda runtimes ship no BEAM, so a container image is the way in),
+using the `aws_gleam_lambda` package for the Runtime API loop.
 
 ## Consuming the SDK
 
@@ -48,11 +49,14 @@ example's `gleam.toml` carries a comment explaining the flip.
 
 ```sh
 git clone https://github.com/Ulberg/aws-gleam-examples.git
-cd aws-gleam-examples/lambda-dynamodb-sqs   # or fargate-s3/
+cd aws-gleam-examples/lambda-s3   # or fargate-s3/
 
 eval "$(aws configure export-credentials --format env)"
 export AWS_REGION=us-east-1
 
+# The S3 examples need a globally-unique bucket name — see the
+# example's README "one-time setup" to write infra/terraform.tfvars
+# before building.
 ./build.sh
 ```
 
