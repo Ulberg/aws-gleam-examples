@@ -33,7 +33,7 @@ pub fn main() {
   // BUCKET_NAME is injected by Terraform. Crash at cold start if it's
   // missing — a Lambda with no target bucket is a deploy error, not
   // something to surface per-invocation.
-  let assert Ok(bucket) = get_env("BUCKET_NAME")
+  let assert Ok(bucket) = lambda.get_env("BUCKET_NAME")
   lambda.start(fn(payload, ctx) { store(client, bucket, payload, ctx) })
 }
 
@@ -58,9 +58,3 @@ fn store(
     Error(e) -> Error(lambda.invocation_error("S3PutFailed", string.inspect(e)))
   }
 }
-
-// `os:getenv/1` BIF takes a charlist (Erlang string); Gleam `String`
-// is a binary. Bypass through `lambda_s3_ffi:get_env/1` which converts
-// both sides and maps the `false` miss onto `Error(Nil)`.
-@external(erlang, "lambda_s3_ffi", "get_env")
-fn get_env(name: String) -> Result(String, Nil)
