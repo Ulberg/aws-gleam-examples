@@ -4,16 +4,17 @@ target = "erlang"
 
 description = "Directly-invoked Lambda that stores each invocation payload as an S3 object. Minimal end-to-end example of running the aws-gleam SDK on Lambda via the aws/lambda module (shipped in aws_gleam_runtime) + a container-image deploy."
 
-# Pinned to the SDK's 1.x line. Patch + minor releases (1.3.2,
+# Pinned to the SDK's 1.x line. Patch + minor releases (1.3.3,
 # 1.4.0, ...) auto-resolve; 2.0.0 is treated as breaking and won't
 # be picked up without an explicit bump here. SDK packages move in
 # lock-step under one tag, so the same constraint works on every
 # aws_gleam_* dep.
 #
 # NOTE: this example uses two aws_gleam_runtime modules: `aws/lambda`
-# (the Lambda Runtime API loop) and `aws/env` (env.get_env). There's
-# no standalone aws_gleam_lambda package. aws/lambda landed in 1.2.0,
-# aws/env in 1.3.1 — hence the >= 1.3.1 floor.
+# (lambda.run — the Runtime API loop + the local `gleam run` path) and
+# `aws/env` (env.get_env). There's no standalone aws_gleam_lambda
+# package. aws/lambda landed in 1.2.0, aws/env in 1.3.1, lambda.run's
+# local path in 1.3.2 — hence the >= 1.3.2 floor.
 #
 # To rebuild against a sibling aws-gleam checkout (SDK iteration),
 # swap each aws_gleam_* line to
@@ -25,8 +26,8 @@ gleam_otp = ">= 1.0.0 and < 2.0.0"
 gleam_http = ">= 4.0.0 and < 5.0.0"
 gleam_httpc = ">= 5.0.0 and < 6.0.0"
 gleam_json = ">= 2.0.0 and < 4.0.0"
-aws_gleam_runtime = ">= 1.3.1 and < 2.0.0"
-aws_gleam_s3 = ">= 1.3.1 and < 2.0.0"
+aws_gleam_runtime = ">= 1.3.2 and < 2.0.0"
+aws_gleam_s3 = ">= 1.3.2 and < 2.0.0"
 
 [dev-dependencies]
 gleeunit = ">= 1.0.0 and < 2.0.0"

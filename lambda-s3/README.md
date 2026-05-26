@@ -15,7 +15,7 @@ image. The Runtime API polling loop lives in `aws_gleam_runtime`
 pub fn main() {
   let assert Ok(client) = s3.new_with_auto_region()
   let assert Ok(bucket) = env.get_env("BUCKET_NAME")
-  lambda.start(fn(payload, ctx) { store(client, bucket, payload, ctx) })
+  lambda.run(fn(payload, ctx) { store(client, bucket, payload, ctx) })
 }
 ```
 
@@ -61,10 +61,34 @@ lambda-s3/
 - OpenTofu (or Terraform — the module is plain HCL)
 - AWS CLI v2 + credentials in env (`eval "$(aws configure
   export-credentials --format env)"`)
-- **aws-gleam SDK ≥ 1.3.1** — `aws/lambda` (the Runtime API loop)
-  and `aws/env` (`env.get_env`) both ship in `aws_gleam_runtime`;
-  there's no standalone `aws_gleam_lambda` package. The Docker build
-  pulls them from hex.
+- **aws-gleam SDK ≥ 1.3.2** — `aws/lambda` (`lambda.run` — the Runtime
+  API loop plus the local `gleam run` path) and `aws/env`
+  (`env.get_env`) both ship in `aws_gleam_runtime`; there's no
+  standalone `aws_gleam_lambda` package. The Docker build pulls them
+  from hex.
+
+## Run locally
+
+`main` is `lambda.run(handler)`: under Lambda it polls the Runtime API;
+run it any other way it invokes the handler once and exits — the *same
+code* both places, no Docker, no RIE. The event is read from
+`--event <json>`, then `$LAMBDA_EVENT`, then `{}`.
+
+It still does a real S3 `PutObject`, so point it at a bucket you own:
+
+```sh
+eval "$(aws configure export-credentials --format env)"
+export AWS_REGION=eu-central-1
+export BUCKET_NAME=<an existing bucket>
+
+gleam run                                 # event = {}
+LAMBDA_EVENT='{"hi":1}' gleam run         # event from env
+gleam run -- --event '{"hi":1}'           # event from a flag
+gleam run -- --event "$(cat event.json)"  # file, via the shell
+```
+
+Off-Lambda the request id is `local`, so the object lands at
+`events/local.json` and the handler prints `{"stored":"events/local.json"}`.
 
 ## One-time setup
 

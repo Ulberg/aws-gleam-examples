@@ -9,15 +9,21 @@
 ////
 //// This is the minimal shape of running the aws-gleam SDK on Lambda
 //// now that the Runtime API loop lives in `aws_gleam_runtime`
-//// (`import aws/lambda`): `lambda.start` takes a
-//// `fn(BitArray, Context) -> Result(BitArray, InvocationError)` and
-//// polls forever. Contrast with the sibling lambda-dynamodb-sqs
-//// example, which hand-rolled that loop locally (src/lambda.gleam)
-//// before the package existed.
+//// (`import aws/lambda`): `lambda.run` takes a
+//// `fn(BitArray, Context) -> Result(BitArray, InvocationError)`. Under
+//// Lambda it polls the Runtime API forever; run any other way (e.g.
+//// `gleam run`) it invokes the handler once with a local event, prints
+//// the response, and exits — the same code, both places. Contrast with
+//// the sibling lambda-dynamodb-sqs example, which hand-rolled that loop
+//// locally (src/lambda.gleam) before the package existed.
 ////
 //// Environment variables (set by Terraform — see infra/main.tf):
 ////   BUCKET_NAME — S3 bucket to write into
 ////   AWS_REGION  — Lambda sets this automatically
+////
+//// Locally (`gleam run`) the event is read from `--event <json>`, else
+//// `$LAMBDA_EVENT`, else `{}`; the handler still does a real S3 PutObject,
+//// so set BUCKET_NAME + AWS creds in your shell.
 
 import aws/env
 import aws/lambda
@@ -35,7 +41,9 @@ pub fn main() {
   // missing — a Lambda with no target bucket is a deploy error, not
   // something to surface per-invocation.
   let assert Ok(bucket) = env.get_env("BUCKET_NAME")
-  lambda.start(fn(payload, ctx) { store(client, bucket, payload, ctx) })
+  // `lambda.run` = the dual entry: polls the Runtime API under Lambda,
+  // one-shot invoke under `gleam run`. Same code in both.
+  lambda.run(fn(payload, ctx) { store(client, bucket, payload, ctx) })
 }
 
 fn store(
