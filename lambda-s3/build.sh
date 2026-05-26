@@ -20,7 +20,11 @@ echo "→ ensuring ECR repo exists"
   tofu apply -auto-approve -target=aws_ecr_repository.lambda >/dev/null )
 
 REPO_URL=$( cd "$HERE/infra" && tofu output -raw ecr_repo_url )
-REGION=$( cd "$HERE/infra" && tofu output -raw region 2>/dev/null || echo us-east-1 )
+# Derive the login region from the repo URL itself
+# (<acct>.dkr.ecr.<region>.amazonaws.com/<repo>). The `region` output isn't
+# materialised by the targeted apply above, so reading it here would fall
+# back to us-east-1 and mismatch the repo when region != us-east-1.
+REGION=$( printf '%s\n' "$REPO_URL" | sed -E 's/.*\.dkr\.ecr\.([^.]+)\.amazonaws\.com.*/\1/' )
 
 echo "→ building container image for linux/arm64"
 docker buildx build \

@@ -1,0 +1,10 @@
+# Keep the build context to src/ + gleam.toml (+ manifest.toml). Without this,
+# `COPY . /build/` ships your local build/ (the BEAM shipment + deps from
+# `gleam run`) and infra/ (.terraform plugins, tfstate) — hundreds of MB the
+# in-image `gleam deps download` + `gleam export` regenerate anyway.
+build/
+infra/
+*.sh
+README.md
+.gitignore
+erl_crash.dump
