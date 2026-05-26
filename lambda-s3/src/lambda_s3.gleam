@@ -19,6 +19,7 @@
 ////   BUCKET_NAME — S3 bucket to write into
 ////   AWS_REGION  — Lambda sets this automatically
 
+import aws/env
 import aws/lambda
 import aws/services/s3
 import aws/streaming
@@ -33,7 +34,7 @@ pub fn main() {
   // BUCKET_NAME is injected by Terraform. Crash at cold start if it's
   // missing — a Lambda with no target bucket is a deploy error, not
   // something to surface per-invocation.
-  let assert Ok(bucket) = lambda.get_env("BUCKET_NAME")
+  let assert Ok(bucket) = env.get_env("BUCKET_NAME")
   lambda.start(fn(payload, ctx) { store(client, bucket, payload, ctx) })
 }
 

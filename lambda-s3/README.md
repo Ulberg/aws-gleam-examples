@@ -14,7 +14,7 @@ image. The Runtime API polling loop lives in `aws_gleam_runtime`
 ```gleam
 pub fn main() {
   let assert Ok(client) = s3.new_with_auto_region()
-  let assert Ok(bucket) = lambda.get_env("BUCKET_NAME")
+  let assert Ok(bucket) = env.get_env("BUCKET_NAME")
   lambda.start(fn(payload, ctx) { store(client, bucket, payload, ctx) })
 }
 ```
@@ -61,10 +61,10 @@ lambda-s3/
 - OpenTofu (or Terraform — the module is plain HCL)
 - AWS CLI v2 + credentials in env (`eval "$(aws configure
   export-credentials --format env)"`)
-- **aws-gleam SDK ≥ 1.3.0** — `aws/lambda` (the Runtime API loop +
-  `lambda.get_env`) ships in `aws_gleam_runtime`; there's no
-  standalone `aws_gleam_lambda` package. The Docker build pulls it
-  from hex.
+- **aws-gleam SDK ≥ 1.3.1** — `aws/lambda` (the Runtime API loop)
+  and `aws/env` (`env.get_env`) both ship in `aws_gleam_runtime`;
+  there's no standalone `aws_gleam_lambda` package. The Docker build
+  pulls them from hex.
 
 ## One-time setup
 
