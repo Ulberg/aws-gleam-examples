@@ -8,8 +8,8 @@
 //// event source mapping — the Lambda is its own front door.
 ////
 //// This is the minimal shape of running the aws-gleam SDK on Lambda
-//// now that the Runtime API loop lives in the `aws_gleam_lambda`
-//// package (`import aws/lambda`): `lambda.start` takes a
+//// now that the Runtime API loop lives in `aws_gleam_runtime`
+//// (`import aws/lambda`): `lambda.start` takes a
 //// `fn(BitArray, Context) -> Result(BitArray, InvocationError)` and
 //// polls forever. Contrast with the sibling lambda-dynamodb-sqs
 //// example, which hand-rolled that loop locally (src/lambda.gleam)

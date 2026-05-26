@@ -1,12 +1,12 @@
 # lambda-dynamodb-sqs
 
 > **Deprecated — superseded by [`lambda-s3/`](../lambda-s3/).** That
-> example runs Gleam on Lambda via the first-party `aws_gleam_lambda`
-> package (`import aws/lambda` + `lambda.start`) instead of the ~250
-> LOC Runtime API loop hand-rolled here in `src/lambda.gleam`. This
-> example is kept for reference — the hand-rolled loop is a useful
-> read if you want to see what the package now does for you — but it's
-> not recommended for new work.
+> example runs Gleam on Lambda via the `aws/lambda` module shipped in
+> `aws_gleam_runtime` (`import aws/lambda` + `lambda.start`) instead
+> of the ~250 LOC Runtime API loop hand-rolled here in
+> `src/lambda.gleam`. This example is kept for reference — the
+> hand-rolled loop is a useful read if you want to see what the
+> package now does for you — but it's not recommended for new work.
 
 SQS-triggered AWS Lambda function written in Gleam. Each incoming
 SQS message is parsed as JSON and landed as a row in a DynamoDB
@@ -98,8 +98,9 @@ aws dynamodb scan --table-name "aws-gleam-lambda-dynamodb-sqs-users" --max-items
    compiled inside is guaranteed to load at runtime.
 2. **The Lambda Runtime API loop is hand-rolled** (`src/lambda.gleam`)
    because there's no Erlang-target glambda equivalent yet. ~250
-   LOC, would lift cleanly into its own `aws_gleam_lambda` hex
-   package once the patterns stabilize.
+   LOC — since lifted into `aws_gleam_runtime` as the `aws/lambda`
+   module (SDK 1.2.0), which is what the lambda-s3 example uses
+   instead of carrying this file.
 3. **Typed events**: `SqsEvent` / `SqsRecord` / `Context` model
    the Lambda contract; the dispatcher (`lambda.sqs_handler`)
    decodes the raw payload into the typed record before calling

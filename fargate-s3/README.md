@@ -40,8 +40,8 @@ to Fargate:
 
 For callers who **do** want Gleam-on-Lambda, see the sibling
 [`lambda-s3/`](../lambda-s3/) example — it demonstrates the
-container-image + Erlang-target approach via the `aws_gleam_lambda`
-package.
+container-image + Erlang-target approach via `aws/lambda` (in
+`aws_gleam_runtime`).
 
 ## Layout
 

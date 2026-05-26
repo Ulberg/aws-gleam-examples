@@ -7,14 +7,15 @@ infra; they share no code.
 | Example | What it shows |
 |---|---|
 | [`fargate-s3/`](./fargate-s3/) | End-to-end S3 + SQS round-trip from inside two ECS Fargate roles (writer + reader). Validates the credentials chain, SigV4 signing, endpoint resolution, and HTTP transport against live AWS. |
-| [`lambda-s3/`](./lambda-s3/) | Directly-invoked Lambda that stores each invocation payload as an S3 object. The canonical Gleam-on-Lambda example: Runtime API loop via the `aws_gleam_lambda` package (`import aws/lambda`) + container-image deploy. |
-| [`lambda-dynamodb-sqs/`](./lambda-dynamodb-sqs/) | **(deprecated — see [`lambda-s3/`](./lambda-s3/))** SQS-triggered Lambda that lands each message into a DynamoDB table. Hand-rolls the Runtime API loop locally; kept for reference now that `aws_gleam_lambda` packages it. |
+| [`lambda-s3/`](./lambda-s3/) | Directly-invoked Lambda that stores each invocation payload as an S3 object. The canonical Gleam-on-Lambda example: Runtime API loop via `import aws/lambda` (shipped in `aws_gleam_runtime`) + container-image deploy. |
+| [`lambda-dynamodb-sqs/`](./lambda-dynamodb-sqs/) | **(deprecated — see [`lambda-s3/`](./lambda-s3/))** SQS-triggered Lambda that lands each message into a DynamoDB table. Hand-rolls the Runtime API loop locally; kept for reference now that `aws_gleam_runtime` packages it as `aws/lambda`. |
 
 More examples (EC2, EKS, etc.) will land here when there's a
 working pattern for each. `lambda-s3` shows the container-image +
 Erlang-target approach to running Gleam on Lambda (the first-party
 Lambda runtimes ship no BEAM, so a container image is the way in),
-using the `aws_gleam_lambda` package for the Runtime API loop.
+using `aws/lambda` (shipped in `aws_gleam_runtime`) for the Runtime
+API loop.
 
 ## Consuming the SDK
 

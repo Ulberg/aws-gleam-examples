@@ -8,9 +8,8 @@ the handler replies `{"stored":"<key>"}`.
 Runs the [aws-gleam](https://github.com/Ulberg/aws-gleam) SDK on
 Lambda via a container image — the SDK targets Erlang/BEAM, which
 Lambda's first-party runtimes don't ship, so the BEAM rides inside the
-image. The Runtime API polling loop lives in the SDK's
-`aws_gleam_lambda` package (`import aws/lambda`), so the example itself
-is just a handler:
+image. The Runtime API polling loop lives in `aws_gleam_runtime`
+(`import aws/lambda`), so the example itself is just a handler:
 
 ```gleam
 pub fn main() {
@@ -22,7 +21,8 @@ pub fn main() {
 
 > Supersedes the [`lambda-dynamodb-sqs/`](../lambda-dynamodb-sqs/)
 > example, which hand-rolled the same Runtime API loop locally
-> (~250 LOC in `src/lambda.gleam`) before `aws_gleam_lambda` existed.
+> (~250 LOC in `src/lambda.gleam`) before `aws/lambda` shipped in
+> `aws_gleam_runtime`.
 
 ## Architecture
 
@@ -46,7 +46,7 @@ aws lambda invoke --payload '{...}' ─── Lambda function
 
 ```
 lambda-s3/
-├── gleam.toml              hex deps: aws_gleam_runtime + _lambda + _s3
+├── gleam.toml              hex deps: aws_gleam_runtime + _s3
 ├── src/
 │   ├── lambda_s3.gleam     handler: PutObject the payload, reply with the key
 │   └── lambda_s3_ffi.erl   os:getenv shim (binary <-> charlist)
@@ -62,9 +62,9 @@ lambda-s3/
 - OpenTofu (or Terraform — the module is plain HCL)
 - AWS CLI v2 + credentials in env (`eval "$(aws configure
   export-credentials --format env)"`)
-- **`aws_gleam_lambda` published to hex** (SDK ≥ 1.1.1). The build
-  pulls it from hex; until that release lands, `gleam deps download`
-  inside the Docker build fails on a missing package.
+- **aws-gleam SDK ≥ 1.2.0** — `aws/lambda` (the Runtime API loop)
+  ships in `aws_gleam_runtime` as of 1.2.0; there's no standalone
+  `aws_gleam_lambda` package. The Docker build pulls it from hex.
 
 ## One-time setup
 

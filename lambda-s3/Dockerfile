@@ -1,6 +1,6 @@
 # Lambda container image for the lambda-s3 example.
 #
-# Consumes aws_gleam_runtime + aws_gleam_lambda + aws_gleam_s3 from
+# Consumes aws_gleam_runtime + aws_gleam_s3 from
 # hex.pm — no sibling SDK checkout needed, no in-image regen.
 # `gleam deps download` pulls everything from hex; `gleam export
 # erlang-shipment` produces the OTP release the entrypoint runs.
