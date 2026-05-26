@@ -10,7 +10,11 @@
 
 set -eu
 HERE="$(cd "$(dirname "$0")" && pwd)"
-PAYLOAD="${1:-{\"hello\":\"from aws-gleam lambda-s3\"}}"
+# Separate var so the JSON's braces don't collide with `${1:-...}`
+# brace-matching — an inline default ending in `}}` makes the shell append a
+# stray `}` to $1 (e.g. `{"hello":"cloud"}` -> `{"hello":"cloud"}}`).
+DEFAULT_PAYLOAD='{"hello":"from aws-gleam lambda-s3"}'
+PAYLOAD="${1:-$DEFAULT_PAYLOAD}"
 
 cd "$HERE/infra"
 FN=$(tofu output -raw lambda_function_name)
