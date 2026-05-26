@@ -1,0 +1,8 @@
+# Copy to terraform.tfvars (gitignored) and edit before `tofu apply`.
+#
+# `bucket_name` MUST be globally unique across all of S3 — prefix
+# with your AWS account id or personal handle.
+
+bucket_name = "aws-gleam-lambda-s3-<your-account-id>-us-east-1"
+# region               = "us-east-1"            # default
+# lambda_function_name = "aws-gleam-lambda-s3"  # default
