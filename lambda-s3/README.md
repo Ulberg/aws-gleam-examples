@@ -19,11 +19,6 @@ pub fn main() {
 }
 ```
 
-> Supersedes the [`lambda-dynamodb-sqs/`](../lambda-dynamodb-sqs/)
-> example, which hand-rolled the same Runtime API loop locally
-> (~250 LOC in `src/lambda.gleam`) before `aws/lambda` shipped in
-> `aws_gleam_runtime`.
-
 ## Architecture
 
 ```
@@ -144,8 +139,8 @@ aws logs tail /aws/lambda/aws-gleam-lambda-s3 --follow --since 1m
    matching Gleam + Erlang so the bytecode compiled inside loads at
    runtime.
 2. **The Runtime API loop is a package now.** `import aws/lambda` +
-   `lambda.start(handler)` replaces the loop the lambda-dynamodb-sqs
-   example carried locally. The handler is a plain
+   `lambda.run(handler)` is the whole entry point — no hand-rolled
+   poll loop. The handler is a plain
    `fn(BitArray, Context) -> Result(BitArray, InvocationError)`.
 3. **Same credentials chain as anywhere.** `s3.new_with_auto_region()`
    reads `AWS_REGION` and resolves creds env-first — exactly what the

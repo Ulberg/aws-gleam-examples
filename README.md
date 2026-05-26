@@ -8,7 +8,6 @@ infra; they share no code.
 |---|---|
 | [`fargate-s3/`](./fargate-s3/) | End-to-end S3 + SQS round-trip from inside two ECS Fargate roles (writer + reader). Validates the credentials chain, SigV4 signing, endpoint resolution, and HTTP transport against live AWS. |
 | [`lambda-s3/`](./lambda-s3/) | Directly-invoked Lambda that stores each invocation payload as an S3 object. The canonical Gleam-on-Lambda example: Runtime API loop via `import aws/lambda` (shipped in `aws_gleam_runtime`) + container-image deploy. |
-| [`lambda-dynamodb-sqs/`](./lambda-dynamodb-sqs/) | **(deprecated — see [`lambda-s3/`](./lambda-s3/))** SQS-triggered Lambda that lands each message into a DynamoDB table. Hand-rolls the Runtime API loop locally; kept for reference now that `aws_gleam_runtime` packages it as `aws/lambda`. |
 
 More examples (EC2, EKS, etc.) will land here when there's a
 working pattern for each. `lambda-s3` shows the container-image +

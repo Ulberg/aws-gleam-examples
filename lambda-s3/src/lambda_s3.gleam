@@ -13,9 +13,7 @@
 //// `fn(BitArray, Context) -> Result(BitArray, InvocationError)`. Under
 //// Lambda it polls the Runtime API forever; run any other way (e.g.
 //// `gleam run`) it invokes the handler once with a local event, prints
-//// the response, and exits — the same code, both places. Contrast with
-//// the sibling lambda-dynamodb-sqs example, which hand-rolled that loop
-//// locally (src/lambda.gleam) before the package existed.
+//// the response, and exits — the same code, both places.
 ////
 //// Environment variables (set by Terraform — see infra/main.tf):
 ////   BUCKET_NAME — S3 bucket to write into
