@@ -13,7 +13,7 @@ image. The Runtime API polling loop lives in `aws_gleam_runtime`
 
 ```gleam
 pub fn main() {
-  let assert Ok(client) = s3.new_with_auto_region()
+  let assert Ok(client) = s3.new()
   let assert Ok(bucket) = env.get_env("BUCKET_NAME")
   lambda.run(fn(payload, ctx) { store(client, bucket, payload, ctx) })
 }
@@ -56,11 +56,10 @@ lambda-s3/
 - OpenTofu (or Terraform — the module is plain HCL)
 - AWS CLI v2 + credentials in env (`eval "$(aws configure
   export-credentials --format env)"`)
-- **aws-gleam SDK ≥ 1.3.2** — `aws/lambda` (`lambda.run` — the Runtime
-  API loop plus the local `gleam run` path) and `aws/env`
-  (`env.get_env`) both ship in `aws_gleam_runtime`; there's no
-  standalone `aws_gleam_lambda` package. The Docker build pulls them
-  from hex.
+- **aws-gleam SDK ≥ 1.4.0** — `s3.new()` (full-auto client), plus
+  `aws/lambda` (`lambda.run`) and `aws/env` (`env.get_env`), all in the
+  `aws_gleam_*` 1.4.0 line; there's no standalone `aws_gleam_lambda`
+  package. The Docker build pulls them from hex.
 
 ## Run locally
 
@@ -142,8 +141,8 @@ aws logs tail /aws/lambda/aws-gleam-lambda-s3 --follow --since 1m
    `lambda.run(handler)` is the whole entry point — no hand-rolled
    poll loop. The handler is a plain
    `fn(BitArray, Context) -> Result(BitArray, InvocationError)`.
-3. **Same credentials chain as anywhere.** `s3.new_with_auto_region()`
-   reads `AWS_REGION` and resolves creds env-first — exactly what the
+3. **Same credentials chain as anywhere.** `s3.new()` reads
+   `AWS_REGION` and resolves creds env-first — exactly what the
    Lambda execution environment populates. Built once in `main`,
    reused across warm invocations.
 4. **Streaming bodies.** The payload becomes a `streaming` blob via
