@@ -6,6 +6,7 @@
 //// the writer falls back to a default string so a bare
 //// `run-task` invocation still produces a verifiable round-trip.
 
+import aws/env
 import aws/services/s3
 import aws/services/sqs
 import aws/streaming
@@ -21,10 +22,10 @@ pub fn run() -> Result(String, String) {
   use bucket <- env_required("SMOKE_BUCKET")
   use queue_url <- env_required("SMOKE_QUEUE_URL")
 
-  use s3_client <- try_step("s3_client_init", s3.new_with_auto_region())
-  use sqs_client <- try_step("sqs_client_init", sqs.new_with_auto_region())
+  use s3_client <- try_step("s3_client_init", s3.new())
+  use sqs_client <- try_step("sqs_client_init", sqs.new())
 
-  let payload = case os_getenv("SMOKE_PAYLOAD") {
+  let payload = case env.get_env("SMOKE_PAYLOAD") {
     Ok(p) if p != "" -> p
     _ -> default_payload
   }
@@ -107,7 +108,7 @@ fn env_required(
   name: String,
   k: fn(String) -> Result(a, String),
 ) -> Result(a, String) {
-  case os_getenv(name) {
+  case env.get_env(name) {
     Ok(v) if v != "" -> k(v)
     _ -> Error("missing required env var: " <> name)
   }
@@ -123,9 +124,6 @@ fn try_step(
     Error(e) -> Error(step <> ": " <> string.inspect(e))
   }
 }
-
-@external(erlang, "fargate_s3_ffi", "get_env")
-fn os_getenv(name: String) -> Result(String, Nil)
 
 @external(erlang, "erlang", "unique_integer")
 fn unique_integer() -> Int

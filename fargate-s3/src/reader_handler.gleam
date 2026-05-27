@@ -9,6 +9,7 @@
 //// driver — `aws logs tail /ecs/aws-gleam-smoke --follow` is
 //// the live-view command.
 
+import aws/env
 import aws/services/s3
 import aws/services/sqs
 import aws/streaming
@@ -21,11 +22,11 @@ import gleam/string
 pub fn run_forever() -> Nil {
   let bucket = env_or_die("SMOKE_BUCKET")
   let queue_url = env_or_die("SMOKE_QUEUE_URL")
-  let s3_client = case s3.new_with_auto_region() {
+  let s3_client = case s3.new() {
     Ok(c) -> c
     Error(e) -> panic as { "s3_client_init: " <> string.inspect(e) }
   }
-  let sqs_client = case sqs.new_with_auto_region() {
+  let sqs_client = case sqs.new() {
     Ok(c) -> c
     Error(e) -> panic as { "sqs_client_init: " <> string.inspect(e) }
   }
@@ -158,11 +159,8 @@ fn short_id(m: sqs.Message) -> String {
 }
 
 fn env_or_die(name: String) -> String {
-  case os_getenv(name) {
+  case env.get_env(name) {
     Ok(v) if v != "" -> v
     _ -> panic as { "missing required env var: " <> name }
   }
 }
-
-@external(erlang, "fargate_s3_ffi", "get_env")
-fn os_getenv(name: String) -> Result(String, Nil)
