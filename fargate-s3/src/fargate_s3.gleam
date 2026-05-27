@@ -18,6 +18,7 @@
 //// `AWS_CONTAINER_CREDENTIALS_RELATIVE_URI` via the ECS-metadata
 //// endpoint, same path real production workloads use.
 
+import aws/env
 import gleam/io
 import gleam/result
 import reader_handler
@@ -35,7 +36,7 @@ pub fn main() {
 }
 
 fn role() -> String {
-  os_getenv("SMOKE_ROLE") |> result.unwrap("writer")
+  env.get_env("SMOKE_ROLE") |> result.unwrap("writer")
 }
 
 fn exit_on_error(res: Result(String, String)) -> Nil {
@@ -50,9 +51,6 @@ fn exit_on_error(res: Result(String, String)) -> Nil {
     }
   }
 }
-
-@external(erlang, "fargate_s3_ffi", "get_env")
-fn os_getenv(name: String) -> Result(String, Nil)
 
 @external(erlang, "erlang", "halt")
 fn halt(status: Int) -> a

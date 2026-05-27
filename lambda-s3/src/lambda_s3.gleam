@@ -34,7 +34,7 @@ import gleam/string
 pub fn main() {
   // Reads AWS_REGION + resolves creds via the default chain (env-first,
   // which is what Lambda populates). Built once, reused across invocations.
-  let assert Ok(client) = s3.new_with_auto_region()
+  let assert Ok(client) = s3.new()
   // BUCKET_NAME is injected by Terraform. Crash at cold start if it's
   // missing — a Lambda with no target bucket is a deploy error, not
   // something to surface per-invocation.
