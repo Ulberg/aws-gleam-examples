@@ -1,79 +1,21 @@
 # aws-gleam-examples
 
-Real-world deploys consuming the [aws-gleam](https://github.com/Ulberg/aws-gleam)
-SDK. Each subdirectory is a standalone example with its own deploy
-infra; they share no code.
+Deployable examples for the [aws-gleam](https://github.com/Ulberg/aws-gleam) SDK. Each is standalone, with its own infra.
 
-| Example | What it shows |
+| Example | What |
 |---|---|
-| [`fargate-s3/`](./fargate-s3/) | End-to-end S3 + SQS round-trip from inside two ECS Fargate roles (writer + reader). Validates the credentials chain, SigV4 signing, endpoint resolution, and HTTP transport against live AWS. |
-| [`lambda-s3/`](./lambda-s3/) | Directly-invoked Lambda that stores each invocation payload as an S3 object. The canonical Gleam-on-Lambda example: Runtime API loop via `import aws/lambda` (shipped in `aws_gleam_runtime`) + container-image deploy. |
+| [`lambda-s3/`](./lambda-s3/) | Lambda that stores each invocation payload in S3. |
+| [`fargate-s3/`](./fargate-s3/) | Writer + reader Fargate tasks — an S3 + SQS round-trip. |
 
-More examples (EC2, EKS, etc.) will land here when there's a
-working pattern for each. `lambda-s3` shows the container-image +
-Erlang-target approach to running Gleam on Lambda (the first-party
-Lambda runtimes ship no BEAM, so a container image is the way in),
-using `aws/lambda` (shipped in `aws_gleam_runtime`) for the Runtime
-API loop.
+## Dependencies
 
-## Consuming the SDK
-
-Each example's `gleam.toml` lists exactly the per-service hex
-packages it imports, on top of the shared `aws_gleam_runtime`:
+One hex package per AWS service, plus `aws_gleam_runtime`, pinned to the major:
 
 ```toml
-[dependencies]
-aws_gleam_runtime = ">= 1.1.0 and < 2.0.0"
-aws_gleam_s3      = ">= 1.1.0 and < 2.0.0"
-aws_gleam_sqs     = ">= 1.1.0 and < 2.0.0"
+aws_gleam_runtime = ">= 1.4.0 and < 2.0.0"
+aws_gleam_s3      = ">= 1.4.0 and < 2.0.0"
 ```
 
-Pinned to the current major. Patch + minor releases (`1.0.1`,
-`1.1.0`, …) pull in automatically; a `2.0.0` is treated as
-breaking and requires an explicit bump per example. The SDK
-releases under one tag so every `aws_gleam_*` moves in lock-step
-— the same constraint works for every dep.
+All `aws_gleam_*` move in lock-step under one tag, so one constraint fits every dep. Minor/patch auto-resolve (`gleam deps update`); a `2.0.0` needs an explicit bump.
 
-That way, your compile only touches the AWS services you use —
-not all 409 the SDK supports. The tree-shaking trick: the SDK
-ships one hex package per service, not one mega-package
-containing everything.
-
-During SDK iteration (when you need to test unreleased changes),
-swap each example's hex dep for a path dep pointing at a sibling
-`aws-gleam/` checkout — e.g.
-`aws_gleam_runtime = { path = "../../aws-gleam/runtime" }`. The
-example's `gleam.toml` carries a comment explaining the flip.
-
-## Quickstart
-
-```sh
-git clone https://github.com/Ulberg/aws-gleam-examples.git
-cd aws-gleam-examples/lambda-s3   # or fargate-s3/
-
-eval "$(aws configure export-credentials --format env)"
-export AWS_REGION=us-east-1
-
-# The S3 examples need a globally-unique bucket name — see the
-# example's README "one-time setup" to write infra/terraform.tfvars
-# before building.
-./build.sh
-```
-
-No sibling checkout, no in-image SDK regen — `gleam deps download`
-pulls every `aws_gleam_*` package from hex.pm at the version
-pinned in `gleam.toml`. The Dockerfile is just `gleam:erlang-alpine`
-+ `gleam deps download && gleam export erlang-shipment`.
-
-## Bumping SDK versions
-
-When a new SDK release lands (`1.0.1`, `1.1.0`, `2.0.0`, …):
-
-```sh
-# Patch / minor — picked up automatically on next deps download.
-gleam deps update
-
-# Major (2.0+) — bump the upper bound:
-sed -i 's/and < 2.0.0/and < 3.0.0/' */gleam.toml
-gleam deps update
-```
+Each example's README has its run, deploy, and teardown commands.
